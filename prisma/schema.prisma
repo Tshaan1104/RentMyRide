@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// 01:11:11
+model User {
+  id           String       @id @unique
+  email        String
+  firstName    String
+  lastName     String
+  profileimage String?
+  vehicle      vehicle[]
+  Preference   Preference[]
+  Reservation  Reservation[]
+}
+
+model vehicle {
+  id String @id @default(uuid())
+
+  title        String?
+  description  String?
+  Passengers   String?
+  Mileage      String?
+  Year         String?
+  Country      String?
+  Photo        String?
+  price        Int?
+  categoryName String?
+  Preference   Preference[]
+  Reservation  Reservation[]
+
+
+  addedCategory    Boolean @default(false)
+  addedDescription Boolean @default(false)
+  addedLocation    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
+}
+
+model Preference {
+  id String @id @default(uuid())
+
+  User    User?    @relation(fields: [userId], references: [id])
+  userId  String?
+  vehicle vehicle? @relation(fields: [vehID], references: [id])
+  vehID   String?
+
+  createAT DateTime @default(now())
+
+}
+
+
+model Reservation{
+  id String @id @default(uuid())
+  
+  startdata DateTime
+  enddate DateTime
+  createdAt DateTime @default(now())
+
+
+  User    User?    @relation(fields: [userId], references: [id])
+  userId  String?
+  vehicle vehicle? @relation(fields: [vehID], references: [id])
+  vehID   String?
+}
